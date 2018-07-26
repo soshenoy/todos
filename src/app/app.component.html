@@ -1,0 +1,37 @@
+<div class="container">
+  <div class="box">
+    <h1 class="title has-text-centered">Todos</h1>
+    <div class="field">
+      <table class="table is-fullwidth">
+        <tbody>
+          <tr>
+            <td style="width:1%; vertical-align:middle;"><input type="checkbox" [(ngModel)]="masterCheck" (change)="changeAllStates()" /></td>
+            <td><input class="input is-medium" type="text" placeholder="What needs to be done?" [(ngModel)]='todoInput' (keyup.enter)="addTodo(todoInput)" /></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="field">
+      <table class="table is-fullwidth is-hoverable">
+        <tbody>
+          <tr class="todo" *ngFor="let todo of todosBackup">
+            <td style="width:1%"><input type="checkbox" [(ngModel)]="todo.isCompleted" (change)="changeState(todo)" /></td>
+            <td contenteditable="true" [ngClass]="{'completed': todo.isCompleted}" (keydown.enter)="editTodo($event, todo);false" (blur)="editTodo($event, todo)">{{ todo.text }}</td>
+            <td style="width:1%"><a class="delete delete-todo-button" (click)="removeTodos(todo)"></a></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div *ngIf="todos?.length > 0" class="field is-flex control-bar">
+      <div>{{ getItemsLeftCount() }} items left</div>
+      <div class="level-item">
+        <button class="button is-white" [ngClass]="{'is-active': activeListNumber === 0}" type="button" (click)="updateTodoList(0)">All</button>
+        <button class="button is-white" [ngClass]="{'is-active': activeListNumber === 1}" type="button" (click)="updateTodoList(1)">Active</button>
+        <button class="button is-white" [ngClass]="{'is-active': activeListNumber === 2}" type="button" (click)="updateTodoList(2)">Completed</button>
+      </div>
+      <div>
+        <button [ngClass]="{'clear-completed-hidden': !isCompletedCount()}" class="button is-text" type="button" (click)="removeTodos()">Clear Completed</button>
+      </div>
+    </div>
+  </div>
+</div>
