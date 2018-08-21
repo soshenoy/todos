@@ -18,6 +18,11 @@ export class AppComponent {
     this._dataService.getTodos().subscribe(res => {
       if(res) {
         this.todosBackup = this.todos = res;
+        let max = this.todos[0].order 
+        this.todos.forEach(todo => {
+          if (todo.order > max) max = todo.order
+        })
+        this.order = max
       }
       else this.todosBackup = this.todos = []
     });
@@ -45,11 +50,12 @@ export class AppComponent {
     });
   }
 
-  changeAllStates(){
-    const value = this.todos.filter(item => item.completed).length === this.todos.length ? false : true;
-    this._dataService.updateTodos(value).subscribe(res => {
+  changeAllStates(state){
+    console.log(this.masterCheck)
+    //const value = this.todos.filter(item => item.completed).length === this.todos.length ? false : true;
+    this._dataService.updateTodos(this.masterCheck).subscribe(res => {
       if(res.status === '200') {
-        this.todos.forEach(item => item.completed = value);
+        this.todos.forEach(item => item.completed = this.masterCheck);
         this.updateTodoList(this.activeListNumber);
       }
     });

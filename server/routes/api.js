@@ -4,18 +4,23 @@ const ObjectID = require('mongodb').ObjectID;
 const uuidv4 = require('uuid/v4');
 
 // Connection URL
-//const url = 'mongodb://localhost:27017/todos';
-const url = 'mongodb://admin:Todoapp111!@ds137281.mlab.com:37281/my-precious-todos';
+const url = 'mongodb://localhost:27017/todos';
+// const url = 'mongodb://admin:Todoapp111!@ds137281.mlab.com:37281/my-precious-todos';
 
 // Database Name
 //const dbName = 'todos';
+let db;
 
 // Connect
 const connection = (closure) => {
+  if(db !== undefined) {
+   return closure(db)
+  }
+
   return MongoClient.connect(url, { useNewUrlParser: true }, (err, client) => {
     assert.equal(null, err);
-    const db = client.db();
-    closure(db);
+    db = client.db();
+    return closure(db);
   });
 };
 
@@ -43,6 +48,7 @@ module.exports.getTodos = function(req, res) {
   connection((db) => {
     db.collection('todos')
       .find()
+      .sort({order: -1})
       .toArray()
       .then((todos) => {
         res.json(todos);
@@ -102,8 +108,9 @@ module.exports.updateTodosById = function(req, res) {
   connection((db) => {
     var changeset = {};
     if(req.body.title) changeset.title = req.body.title;
-    if(req.body.completed) changeset.completed = req.body.completed;
+    if(req.body.state) changeset.completed = req.body.state;
     if(req.body.order) changeset.order = req.body.order;
+    console.log(req.body);
     db.collection("todos").findOneAndUpdate({'_id': req.params.id}, { $set: changeset})
       .then((result) => {
         var response = {};
